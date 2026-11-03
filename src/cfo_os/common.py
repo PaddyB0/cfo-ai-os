@@ -146,6 +146,23 @@ def render_value(name: str, form: str, value: Any) -> str:
     return "\n".join(lines)
 
 
+def unknown_answers(answers: dict[str, Any], specs: dict[str, dict[str, Any]]) -> list[str]:
+    """Keys in the answers file that no placeholder reads, such as a misspelt name. Deploy
+    refuses them, so a typo never silently drops an answer."""
+    known = {n for n, s in specs.items() if not s.get("auto")}
+    roots = {n.split(".")[0] for n in known}
+    out = []
+    for key, value in answers.items():
+        if key not in roots:
+            out.append(key)
+        elif key not in known:
+            if not isinstance(value, dict):
+                out.append(key)
+                continue
+            out += [f"{key}.{leaf}" for leaf in value if f"{key}.{leaf}" not in known]
+    return sorted(out)
+
+
 def resolve_values(answers: dict[str, Any], specs: dict[str, dict[str, Any]],
                    auto: dict[str, str]) -> tuple[dict[str, str], list[str]]:
     """Every placeholder's rendered text, and the required ones the answers leave empty."""

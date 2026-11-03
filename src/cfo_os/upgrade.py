@@ -27,8 +27,8 @@ from . import __version__
 from .catalogue import build as catalogue
 from .common import (CATALOGUE, MANIFEST, TemplateError, add_changelog_line, digest,
                      find_template, is_empty, load_manifest, load_ownership, load_placeholders,
-                     lookup, read_text, regions, render_value, replace_regions, write_manifest,
-                     write_text)
+                     lookup, read_text, regions, render_value, replace_regions, unknown_answers,
+                     write_manifest, write_text)
 from .deploy import load_answers, region_record, render_template
 
 
@@ -61,6 +61,9 @@ def upgrade_values(manifest: dict[str, Any], answers: dict[str, Any] | None,
                    specs: dict[str, dict[str, Any]]) -> dict[str, str]:
     """The values the folder was deployed with, any new answers on top, defaults for new
     optional placeholders, and this template's version."""
+    unknown = unknown_answers(answers or {}, specs)
+    if unknown:
+        raise TemplateError("answers file has key(s) no placeholder reads (misspelt?): " + ", ".join(unknown))
     recorded = manifest.get("values") or {}
     auto = {"deploy.version": __version__,
             "deploy.date": recorded.get("deploy.date", manifest.get("deployed", "")),
@@ -105,6 +108,10 @@ def plan_upgrade(folder: Path, template: Path, answers: dict[str, Any] | None = 
     for f in files:
         path = folder / f.rel
         if not path.exists():
+            if f.rel in recorded_files:
+                # Deployed before and since moved or removed by a person: leave it gone.
+                new_files[f.rel] = recorded_files[f.rel]
+                continue
             plan.adds[f.rel] = f.text
             new_files[f.rel] = {"class": f.cls, "regions": region_record(f.text, f.rel)}
             continue
@@ -116,16 +123,20 @@ def plan_upgrade(folder: Path, template: Path, answers: dict[str, Any] | None = 
             continue
         current = read_text(path)
         if f.cls == "context":
+            record = dict(recorded_files.get(f.rel) or {"class": "context", "regions": {}})
+            offered = set(record.get("suggested") or [])
             have = set(_headings(current))
-            extra = [h for h in _headings(f.text) if h not in have]
+            extra = [h for h in _headings(f.text) if h not in have and h not in offered]
             if extra:
                 plan.suggestions.append((f.rel, extra))
-            new_files[f.rel] = recorded_files.get(f.rel, {"class": "context", "regions": {}})
+                # Remembered, so the same heading is suggested once, not on every upgrade.
+                record["suggested"] = sorted(offered | set(extra))
+            new_files[f.rel] = record
             continue
         # system: template regions only
         old_record = (recorded_files.get(f.rel) or {}).get("regions", {})
         have = {r.id: r for r in regions(current, f.rel)}
-        record: dict[str, dict[str, str | None]] = {}
+        record: dict[str, dict[str, Any]] = {}
         replace: dict[str, str] = {}
         for r in regions(f.text, f.rel):
             new_hash = digest(r.text)
@@ -149,8 +160,12 @@ def plan_upgrade(folder: Path, template: Path, answers: dict[str, Any] | None = 
                 record[r.id] = {"applied": seen.get("applied"),
                                 "template": new_hash if accept_edited else seen.get("template")}
         for rid in have:
-            if rid not in record:
+            if rid in record:
+                continue
+            if not (old_record.get(rid) or {}).get("removed"):
                 plan.removed_regions.append(f"{f.rel}#{rid}")
+            # Remembered as removed, so a later upgrade does not report it again.
+            record[rid] = {"applied": None, "template": None, "removed": True}
         if replace:
             plan.rewrites[f.rel] = replace_regions(current, replace)
         new_files[f.rel] = {"class": f.cls, "regions": record}
@@ -185,12 +200,15 @@ def report_text(plan: Plan, old: str, today: str) -> str:
 
 def apply_plan(folder: Path, plan: Plan, today: str) -> str | None:
     old = load_manifest(folder).get("template_version", "?")
+    if not plan.changes() and old == __version__:
+        return None
     for rel, text in plan.adds.items():
         write_text(folder / rel, text)
     for rel, text in plan.rewrites.items():
         write_text(folder / rel, text)
     for d in load_ownership().directories:
-        (folder / d).mkdir(parents=True, exist_ok=True)
+        if (folder / d).parent.is_dir():
+            (folder / d).mkdir(exist_ok=True)
     if plan.catalogue is not None:
         write_text(folder / CATALOGUE, plan.catalogue)
     report = None

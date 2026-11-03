@@ -6,6 +6,7 @@ The deployed folder is called `CFO OS`. Its filing rules, written for the CFO, a
 
 ```
 CFO OS/
+  CLAUDE.md           read by Claude when the folder is opened; points to START HERE and Instructions
   START HERE.md
   00 System/          Instructions.md, Folder map.md, Changelog.md, Template manifest.json,
                       Tests/Test questions.md, Tests/Runs/

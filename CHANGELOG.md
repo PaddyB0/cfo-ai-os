@@ -2,6 +2,23 @@
 
 All notable changes to this project are recorded here, newest first. The format follows Keep a Changelog, and versions follow Semantic Versioning. Each entry says which template regions changed, so a deployer knows what an upgrade will touch.
 
+## 0.1.1 - 2026-11-02
+
+### Added
+
+- `CLAUDE.md` in the `CFO OS` folder (template region `body`), read by Claude when the folder is opened. It points to `START HERE.md` and `00 System/Instructions.md`.
+- `AGENTS.md` and `CLAUDE.md` at the repository root, for coding agents working on the template.
+
+### Fixed
+
+- `deploy` and `upgrade` refuse answers-file keys that no placeholder reads, so a misspelt key no longer drops an answer silently.
+- `deploy` renders everything, the catalogue included, before writing, so bad input never leaves a half-built folder.
+- The metric list is validated more strictly (names, ids, dimensions, text fields). Connector kinds `input`, `driver` and `other` are accepted.
+- The Datarails adapter no longer assumes a sum when the roll-up is missing. It marks the roll-up `unknown`, and the watch list says so. A metric whose status is not active (for example processing) is flagged.
+- `upgrade` no longer brings back template files a person deleted or moved. It reports a removed region and a suggested context heading once, not on every run, and writes nothing when there is nothing to change.
+- `scrub` exempts only a pinned action's own SHA, not other hex on the same line.
+- Connector guide: a query without a scenario filter can mix actuals, budget and forecast; always filter the scenario.
+
 ## 0.1.0 - 2026-11-02
 
 First release.

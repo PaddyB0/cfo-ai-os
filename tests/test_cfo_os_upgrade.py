@@ -10,6 +10,7 @@ import pytest
 
 from .cfo_os_paths import TEMPLATE  # noqa: F401  (puts src on the path)
 import cfo_os.upgrade as upgrade
+from cfo_os import __version__ as DEPLOYED
 from cfo_os.common import CHANGELOG, MANIFEST, load_manifest, read_text, regions, replace_regions
 from cfo_os.upgrade import apply_plan, plan_upgrade
 
@@ -63,7 +64,7 @@ def test_unedited_region_is_replaced_and_other_files_are_left(deployed, next_tem
     assert (deployed / CLIENT).read_bytes() == client_before
     assert (deployed / CONTEXT).read_bytes() == context_before
     assert load_manifest(deployed)["template_version"] == "0.2.0"
-    assert "upgraded from template 0.1.0 to 0.2.0" in read_text(deployed / CHANGELOG)
+    assert f"upgraded from template {DEPLOYED} to 0.2.0" in read_text(deployed / CHANGELOG)
     again = plan_upgrade(deployed, next_template, today="2027-02-02")
     assert not again.replaced and not again.adds and not again.review
 
@@ -118,3 +119,32 @@ def test_manifest_is_rewritten_only_on_apply(deployed, next_template):
     before = (deployed / MANIFEST).read_bytes()
     plan_upgrade(deployed, next_template, today="2027-02-01")
     assert (deployed / MANIFEST).read_bytes() == before
+
+
+def test_deleted_or_moved_template_files_are_not_brought_back(deployed, next_template):
+    (deployed / "03 Memory/Lessons.md").unlink()
+    (deployed / "05 Periods/README.md").rename(deployed / "08 Archive/Periods README.md")
+    plan = plan_upgrade(deployed, next_template, today="2027-02-01")
+    assert "03 Memory/Lessons.md" not in plan.adds and "05 Periods/README.md" not in plan.adds
+    apply_plan(deployed, plan, "2027-02-01")
+    assert not (deployed / "03 Memory/Lessons.md").exists()
+
+
+def test_removed_region_is_reported_once(deployed, next_template):
+    path = next_template / WORKFLOW
+    text = read_text(path)
+    body = regions(text)[0]
+    path.write_text(text.replace(f"<!-- cfo-os:template begin {body.id} -->\n", "")
+                        .replace(f"<!-- cfo-os:template end {body.id} -->\n", ""),
+                    encoding="utf-8", newline="")
+    first = plan_upgrade(deployed, next_template, today="2027-02-01")
+    assert f"{WORKFLOW}#{body.id}" in first.removed_regions
+    apply_plan(deployed, first, "2027-02-01")
+    assert plan_upgrade(deployed, next_template, today="2027-02-02").removed_regions == []
+
+
+def test_applying_with_nothing_to_change_writes_nothing(deployed, next_template):
+    apply_plan(deployed, plan_upgrade(deployed, next_template, today="2027-02-01"), "2027-02-01")
+    before = snapshot(deployed)
+    apply_plan(deployed, plan_upgrade(deployed, next_template, today="2027-02-02"), "2027-02-02")
+    assert snapshot(deployed) == before

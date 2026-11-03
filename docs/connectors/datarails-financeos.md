@@ -8,7 +8,7 @@ This is a personal project. It is not an official Datarails product and is not s
 
 - **Business metrics.** Named measures, each with a numeric id, a name, a category, and often a description. Some are base metrics read from the data; others are calculated from other metrics with a formula.
 - **Time aggregation.** Each metric says how it rolls up over time. Most sum over months. Balances and counts roll up as end of period, so a quarter returns the last month's value. Read this before answering for a quarter or a year.
-- **Scenarios and scenario cycles.** Actuals, budgets and forecasts are scenarios. A forecast is re-cut in cycles, usually named for months of actuals plus months of forecast. The connector reports default scenarios for each fiscal year; a query without a scenario filter gets the default.
+- **Scenarios and scenario cycles.** Actuals, budgets and forecasts are scenarios. A forecast is re-cut in cycles, usually named for months of actuals plus months of forecast. The connector reports default scenarios for each fiscal year, but a query without a scenario filter is not safe: the connector may fill in a default cycle while leaving the scenario open, and the figure can then mix actuals, budget and forecast. Always filter the scenario, and the cycle for a forecast.
 - **Dimensions.** Metrics can be filtered and split by dimensions such as entity, department or account. Each metric lists the dimensions it supports.
 - **Aggregation tools.** For questions the business metrics do not cover, the connector can aggregate the underlying tables directly. These are slower and closer to the raw data, so prefer a business metric where one exists.
 - **Organisation context.** A summary of the fiscal year, currencies and default scenarios.
@@ -36,7 +36,7 @@ The adapter reads the connector's output into the template's neutral metric list
 
 ## Reading figures well
 
-- **Name the scenario and cycle in every query.** Do not rely on the default unless the answer says which default it used.
+- **Filter the scenario and cycle in every query, and name them in the answer.** Never rely on a default: an unfiltered scenario can add actuals, budget and forecast together.
 - **Actuals to the reference month, then the current cycle.** Query actuals for the closed months and the forecast cycle for the rest, as two queries.
 - **Ask for metric details when in doubt.** The metric details tool returns the formula, the dimensions and the time roll-up. Use it before relying on a calculated metric.
 - **Filter, do not fetch everything.** Use dimension filters to slice. The drill-down tool can cut long results short, so use it to see what sits under a figure, never to build a total; for totals, filter by dimension.

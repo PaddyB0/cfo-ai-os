@@ -20,6 +20,7 @@ rules:
   - {pattern: "03 Memory/*", class: client}
   - {pattern: "04 Workflows/*", class: system}
   - {pattern: "START HERE.md", class: system}
+  - {pattern: "CLAUDE.md", class: system}
   - {pattern: "05 Periods/*", class: client}
   - {pattern: "06 Projects/*", class: client}
   - {pattern: "07 Library/*", class: client}

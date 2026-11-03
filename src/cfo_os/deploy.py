@@ -24,7 +24,7 @@ from .catalogue import build as catalogue
 from .common import (CATALOGUE, MANIFEST, Ownership, TemplateError, add_changelog_line,
                      auto_values, digest, fill, find_template, load_ownership, load_placeholders,
                      placeholders_in, read_text, regions, resolve_values, template_files,
-                     write_manifest, write_text)
+                     unknown_answers, write_manifest, write_text)
 
 
 @dataclass
@@ -68,10 +68,15 @@ def deploy(template: Path, answers: dict[str, Any], metrics: dict[str, Any], tar
         raise TemplateError(f"{target}: not empty; deploy writes only a new folder (use upgrade)")
     ownership = load_ownership()
     specs = load_placeholders()
+    unknown = unknown_answers(answers, specs)
+    if unknown:
+        raise TemplateError("answers file has key(s) no placeholder reads (misspelt?): " + ", ".join(unknown))
     values, missing = resolve_values(answers, specs, auto_values(deployer, today))
     if missing:
         raise TemplateError("answers file is missing required value(s): " + ", ".join(sorted(missing)))
+    # Everything is rendered before the first write, so bad input never leaves a half-built folder.
     files = render_template(template, ownership, specs, values)
+    catalogue_text = catalogue.render(metrics, today)
 
     target.mkdir(parents=True, exist_ok=True)
     manifest: dict[str, Any] = {
@@ -91,7 +96,7 @@ def deploy(template: Path, answers: dict[str, Any], metrics: dict[str, Any], tar
         written.append(f.rel)
     for d in ownership.directories:
         (target / d).mkdir(parents=True, exist_ok=True)
-    write_text(target / CATALOGUE, catalogue.render(metrics, today))
+    write_text(target / CATALOGUE, catalogue_text)
     manifest["files"][CATALOGUE] = {"class": "generated", "regions": {}}
     written.append(CATALOGUE)
     add_changelog_line(target, f"- {today}: deployed from template {__version__} by {deployer}.")
