@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "cfo-ai-os answers file",
+  "description": "What an answers file holds. Generated from src/cfo_os/placeholders.yaml; a test keeps them in step.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cfo",
+    "company",
+    "connector",
+    "data",
+    "metric",
+    "output",
+    "people",
+    "rules",
+    "scenario",
+    "work"
+  ],
+  "properties": {
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "The company's name as it should appear in outputs.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "reporting_currency": {
+          "description": "The currency the board and the consolidated accounts report in, as an ISO code.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "fiscal_year": {
+          "description": "How the fiscal year runs, in words: \"the calendar year\" or \"April to March\".",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "entities": {
+          "description": "One row per legal entity, with its name, country, functional currency and ledger.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "description": {
+          "description": "One or two sentences on what the company does and how it earns revenue.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "spelling": {
+          "description": "The spelling and style outputs are written in.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "reporting_currency",
+        "fiscal_year",
+        "entities",
+        "description"
+      ]
+    },
+    "cfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "The name of the person the folder works for.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "title": {
+          "description": "Their title.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "people": {
+      "description": "One row per person Claude may need to know about, with role and what they receive.",
+      "type": [
+        "array",
+        "string"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "connector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "The finance data connector Claude reads from, as it appears in Claude.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "guide": {
+          "description": "The file name of the connector guide in the template's docs, if one exists.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actuals": {
+          "description": "The name the connector uses for actuals.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "budget": {
+          "description": "The name the connector uses for the budget scenario or cycle.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "forecast": {
+          "description": "The name the connector uses for the forecast scenario.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "current_forecast_cycle": {
+          "description": "The forecast cycle that is current at deploy, for example 9+3.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "cycle_rule": {
+          "description": "How a forecast cycle is chosen in a query, in one sentence.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "actuals",
+        "budget",
+        "forecast",
+        "current_forecast_cycle",
+        "cycle_rule"
+      ]
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reference_month": {
+          "description": "The last closed month at deploy, as yyyy-mm.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "limits": {
+          "description": "What the connected data cannot answer, one line each.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        }
+      },
+      "required": [
+        "reference_month"
+      ]
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "board_revenue": {
+          "description": "The metric that is revenue as the board sees it, with its id.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "gross_revenue": {
+          "description": "Gross revenue before discounts, with its id.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "closing_cash": {
+          "description": "The end-of-period cash balance metric, with its id.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "cash_movement": {
+          "description": "The metric for the forecast change in cash, with its id.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "operating_expenses": {
+          "description": "The operating expenses metric, with its id.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "headcount": {
+          "description": "The headcount metric, with its id.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "board_revenue",
+        "closing_cash"
+      ]
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key_facts": {
+          "description": "The facts Claude must never get wrong, one line each.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        },
+        "sign_convention": {
+          "description": "How the connector signs figures and how the CFO's own workbooks differ.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "materiality": {
+          "description": "The threshold below which a difference is not worth explaining.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "key_facts"
+      ]
+    },
+    "work": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "how_we_work": {
+          "description": "A short paragraph in the CFO's voice on who reviews what, and how often.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "hypotheses": {
+          "description": "The CFO's standing hypotheses to test each cycle.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        },
+        "standard_analyses": {
+          "description": "The analyses the CFO wants each cycle, one line each.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        }
+      },
+      "required": [
+        "how_we_work"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_format": {
+          "description": "The format outputs are produced in unless the CFO says otherwise.",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "default_audience": {
+          "description": "Who a standard output is addressed to.",
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      },
+      "required": [
+        "default_audience"
+      ]
+    },
+    "calendar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "events": {
+          "description": "Recurring dates (close, board, auditor, lender), one line each.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        }
+      }
+    },
+    "glossary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "terms": {
+          "description": "Company terms, one line each, as \"Term: meaning\".",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+__pycache__/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+.venv/
+# Answers files and deployed folders hold a company's facts; keep them out of this repository.
+answers*.yaml
+!examples/answers.example.yaml
+CFO OS/
+!template/CFO OS/

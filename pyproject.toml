@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cfo-ai-os"
+version = "0.1.0"
+description = "A folder template for a CFO working with Claude and a finance data connector."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Patrick Bowyer" }]
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6"]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "jsonschema>=4.18"]
+
+[project.scripts]
+cfo-os = "cfo_os.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+cfo_os = ["*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

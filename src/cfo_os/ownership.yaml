@@ -1,0 +1,33 @@
+# Every path in template/CFO OS/ has one ownership class. Rules are tried in order and the
+# first match wins; a template file no rule matches fails the tests. Patterns are
+# fnmatch-style over the path relative to "CFO OS/", with "/" as the separator.
+#
+#   system     written at deploy; on upgrade, template regions are replaced if unedited
+#   context    written at deploy with placeholders filled; never touched on upgrade
+#   generated  written at deploy; the catalogue is regenerated only with --catalogue
+#   client     headers only at deploy; never opened on upgrade
+#
+# See docs/upgrade.md for what each class means in practice.
+
+rules:
+  - {pattern: "00 System/Tests/Runs/*", class: generated}
+  - {pattern: "00 System/Template manifest.json", class: generated}
+  - {pattern: "00 System/*", class: system}
+  - {pattern: "01 Context/Metric catalogue.md", class: generated}
+  - {pattern: "01 Context/*", class: context}
+  - {pattern: "02 Rules and style/Templates/*", class: system}
+  - {pattern: "02 Rules and style/*", class: client}
+  - {pattern: "03 Memory/*", class: client}
+  - {pattern: "04 Workflows/*", class: system}
+  - {pattern: "START HERE.md", class: system}
+  - {pattern: "05 Periods/*", class: client}
+  - {pattern: "06 Projects/*", class: client}
+  - {pattern: "07 Library/*", class: client}
+  - {pattern: "08 Archive/*", class: client}
+
+# Empty folders deploy creates. Git does not keep empty folders, and the CFO's folder should
+# not carry placeholder files, so they are listed here instead.
+directories:
+  - "06 Projects/_Project template/Inputs"
+  - "06 Projects/_Project template/Working"
+  - "06 Projects/_Project template/Outputs"

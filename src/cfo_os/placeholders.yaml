@@ -1,0 +1,186 @@
+# Every placeholder the template may use. A template file that names a placeholder not listed
+# here fails deploy and the tests. Keys are dotted paths into the answers file.
+#
+#   required: true   deploy fails when the answers file has no value
+#   default: <text>  used when the answers file has no value (optional placeholders only)
+#   form: text | list | table
+#     text   a single line
+#     list   a YAML list of strings, rendered as "- item" lines
+#     table  a YAML list of mappings, rendered as a Markdown table (columns from the first row)
+#   auto: true       filled by deploy.py, never from the answers file
+
+company.name:
+  required: true
+  form: text
+  meaning: The company's name as it should appear in outputs.
+company.reporting_currency:
+  required: true
+  form: text
+  meaning: The currency the board and the consolidated accounts report in, as an ISO code.
+company.fiscal_year:
+  required: true
+  form: text
+  meaning: "How the fiscal year runs, in words: \"the calendar year\" or \"April to March\"."
+company.entities:
+  required: true
+  form: table
+  meaning: One row per legal entity, with its name, country, functional currency and ledger.
+company.description:
+  required: true
+  form: text
+  meaning: One or two sentences on what the company does and how it earns revenue.
+company.spelling:
+  required: false
+  default: British English
+  form: text
+  meaning: The spelling and style outputs are written in.
+
+cfo.name:
+  required: true
+  form: text
+  meaning: The name of the person the folder works for.
+cfo.title:
+  required: false
+  default: CFO
+  form: text
+  meaning: Their title.
+
+people:
+  required: true
+  form: table
+  meaning: One row per person Claude may need to know about, with role and what they receive.
+
+connector.name:
+  required: true
+  form: text
+  meaning: The finance data connector Claude reads from, as it appears in Claude.
+connector.guide:
+  required: false
+  default: none
+  form: text
+  meaning: The file name of the connector guide in the template's docs, if one exists.
+
+scenario.actuals:
+  required: true
+  form: text
+  meaning: The name the connector uses for actuals.
+scenario.budget:
+  required: true
+  form: text
+  meaning: The name the connector uses for the budget scenario or cycle.
+scenario.forecast:
+  required: true
+  form: text
+  meaning: The name the connector uses for the forecast scenario.
+scenario.current_forecast_cycle:
+  required: true
+  form: text
+  meaning: The forecast cycle that is current at deploy, for example 9+3.
+scenario.cycle_rule:
+  required: true
+  form: text
+  meaning: How a forecast cycle is chosen in a query, in one sentence.
+
+data.reference_month:
+  required: true
+  form: text
+  meaning: The last closed month at deploy, as yyyy-mm.
+data.limits:
+  required: false
+  default: "- None recorded yet."
+  form: list
+  meaning: What the connected data cannot answer, one line each.
+
+metric.board_revenue:
+  required: true
+  form: text
+  meaning: The metric that is revenue as the board sees it, with its id.
+metric.gross_revenue:
+  required: false
+  default: not mapped
+  form: text
+  meaning: Gross revenue before discounts, with its id.
+metric.closing_cash:
+  required: true
+  form: text
+  meaning: The end-of-period cash balance metric, with its id.
+metric.cash_movement:
+  required: false
+  default: not mapped
+  form: text
+  meaning: The metric for the forecast change in cash, with its id.
+metric.operating_expenses:
+  required: false
+  default: not mapped
+  form: text
+  meaning: The operating expenses metric, with its id.
+metric.headcount:
+  required: false
+  default: not mapped
+  form: text
+  meaning: The headcount metric, with its id.
+
+rules.key_facts:
+  required: true
+  form: list
+  meaning: The facts Claude must never get wrong, one line each.
+rules.sign_convention:
+  required: false
+  default: Connector figures are natural sign, revenue positive and cost negative.
+  form: text
+  meaning: How the connector signs figures and how the CFO's own workbooks differ.
+rules.materiality:
+  required: false
+  default: Not set. Ask before treating a difference as immaterial.
+  form: text
+  meaning: The threshold below which a difference is not worth explaining.
+
+work.how_we_work:
+  required: true
+  form: text
+  meaning: A short paragraph in the CFO's voice on who reviews what, and how often.
+work.hypotheses:
+  required: false
+  default: "- None recorded yet."
+  form: list
+  meaning: The CFO's standing hypotheses to test each cycle.
+work.standard_analyses:
+  required: false
+  default: "- None recorded yet."
+  form: list
+  meaning: The analyses the CFO wants each cycle, one line each.
+
+output.default_format:
+  required: false
+  default: a Word document
+  form: text
+  meaning: The format outputs are produced in unless the CFO says otherwise.
+output.default_audience:
+  required: true
+  form: text
+  meaning: Who a standard output is addressed to.
+
+calendar.events:
+  required: false
+  default: "- None recorded yet."
+  form: list
+  meaning: Recurring dates (close, board, auditor, lender), one line each.
+
+glossary.terms:
+  required: false
+  default: "- None recorded yet."
+  form: list
+  meaning: "Company terms, one line each, as \"Term: meaning\"."
+
+deploy.version:
+  auto: true
+  form: text
+  meaning: The template version deployed.
+deploy.date:
+  auto: true
+  form: text
+  meaning: The deploy date, yyyy-mm-dd.
+deploy.deployer:
+  auto: true
+  form: text
+  meaning: Who ran the deploy.

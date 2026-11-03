@@ -1,0 +1,116 @@
+# Fictional example: Northwind Instruments Ltd is invented; no real company is described.
+#
+# Keys are the placeholder names in src/cfo_os/placeholders.yaml, nested by their dotted path.
+# Copy this file, replace every value, and keep your copy somewhere private. Never commit it.
+
+company:
+  name: Northwind Instruments Ltd
+  reporting_currency: GBP
+  fiscal_year: April to March
+  description: >-
+    Northwind Instruments designs and sells laboratory measuring instruments to universities
+    and research labs. It earns revenue from instrument sales and from annual service contracts.
+  spelling: British English
+  entities:
+    - name: Northwind Instruments Ltd
+      country: United Kingdom
+      functional currency: GBP
+      ledger: UK ledger
+    - name: Northwind Instruments BV
+      country: Netherlands
+      functional currency: EUR
+      ledger: EU ledger
+    - name: Northwind Instruments Inc
+      country: United States
+      functional currency: USD
+      ledger: US ledger
+
+cfo:
+  name: Helen Marsh
+  title: CFO
+
+people:
+  - name: Helen Marsh
+    role: CFO
+    receives: Everything
+  - name: Daniel Okoro
+    role: Chief Executive
+    receives: Management accounts, board pack, cash runway
+  - name: Priya Lal
+    role: Financial Controller
+    receives: Month-end close checklist, quarterly accounts
+  - name: Tom Ashby
+    role: FP&A Analyst
+    receives: Forecast critique, budget workings
+  - name: The audit partner
+    role: External auditor
+    receives: Quarterly accounts, year-end request list
+
+connector:
+  name: Example Finance Connector
+  guide: none
+
+scenario:
+  actuals: Actuals
+  budget: Budget
+  forecast: Forecast
+  current_forecast_cycle: "6+6"
+  cycle_rule: >-
+    Name the cycle as months of actuals plus months of forecast, for example 6+6, and pass it
+    as the forecast cycle filter in every forecast query.
+
+data:
+  reference_month: "2027-09"
+  limits:
+    - The connector holds no sales pipeline or order book; ask the Chief Executive.
+    - Payroll is loaded as department totals, not by person.
+    - The US ledger loads one month after the others.
+
+metric:
+  board_revenue: Net Revenue (id 103)
+  gross_revenue: Gross Revenue (id 101)
+  closing_cash: Closing Cash (id 109)
+  cash_movement: Cash Movement (id 110)
+  operating_expenses: Operating Expenses (id 107)
+  headcount: Headcount (id 111)
+
+rules:
+  key_facts:
+    - Board revenue is net of discounts and excludes intercompany sales.
+    - Service contract revenue is recognised evenly over the contract term.
+    - The BV and the Inc are translated at average rates for the income statement and closing rates for the balance sheet.
+  sign_convention: >-
+    Connector figures are natural sign, revenue positive and cost negative. The board pack shows
+    costs as positive.
+  materiality: Differences below GBP 25k, or below 5 per cent of the line, need no comment.
+
+work:
+  how_we_work: >-
+    I review the forecast critique and the cash runway in the first week after each close. The
+    Financial Controller owns the close; the FP&A Analyst owns the forecast. I want the answer
+    first, then the figures, then the caveats.
+  hypotheses:
+    - Service contract renewals are slowing in the US.
+    - Freight costs are still above the budget assumption.
+  standard_analyses:
+    - Gross margin by product line, month and year to date.
+    - Operating expenses by department against budget.
+    - Cash runway under the current cycle.
+
+output:
+  default_format: a Word document
+  default_audience: the executive team
+
+calendar:
+  events:
+    - Working day 5 of each month - close complete.
+    - Working day 8 of each month - management accounts to the executive team.
+    - Third week after each quarter end - board meeting.
+    - Last quarter of the fiscal year - budget for the year that follows.
+    - Ten weeks after the year end - audit fieldwork.
+
+glossary:
+  terms:
+    - "Service contract: an annual support and calibration agreement sold with an instrument."
+    - "Run rate: the average of the last three months of actuals."
+    - "The group: the three entities consolidated in GBP."
