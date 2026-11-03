@@ -1,0 +1,34 @@
+{
+  "_note": "Fictional example. No real company or figure. Amounts in thousands, inflows positive.",
+  "currency": "GBP",
+  "unit": "thousands",
+  "opening": {"month": "2027-03", "balance": 1200, "source": "Actuals, closing cash, 2027-03"},
+  "minimum_cash": 250,
+  "movements": [
+    {"month": "2027-04", "amount": -140, "source": "Forecast, 3+9"},
+    {"month": "2027-05", "amount": -150, "source": "Forecast, 3+9"},
+    {"month": "2027-06", "amount": 60, "source": "Forecast, 3+9"},
+    {"month": "2027-07", "amount": -160, "source": "Forecast, 3+9"},
+    {"month": "2027-08", "amount": -170, "source": "Forecast, 3+9"},
+    {"month": "2027-09", "amount": -120, "source": "Forecast, 3+9"},
+    {"month": "2027-10", "amount": -180, "source": "Forecast, 3+9"},
+    {"month": "2027-11", "amount": -150, "source": "Forecast, 3+9"},
+    {"month": "2027-12", "amount": -90, "source": "Forecast, 3+9"}
+  ],
+  "forecast_closing": [
+    {"month": "2027-04", "balance": 1060},
+    {"month": "2027-05", "balance": 910},
+    {"month": "2027-06", "balance": 970},
+    {"month": "2027-07", "balance": 810}
+  ],
+  "trailing_actual_movements": [
+    {"month": "2027-01", "amount": -110},
+    {"month": "2027-02", "amount": -125},
+    {"month": "2027-03", "amount": -115}
+  ],
+  "sensitivities": [
+    {"name": "Customer receipts 20 a month lower", "monthly": -20},
+    {"name": "June receipt slips to July", "adjustments": [{"month": "2027-06", "amount": -200}, {"month": "2027-07", "amount": 200}]}
+  ],
+  "previous": {"cycle": "2+10", "runway_month": "2028-01"}
+}

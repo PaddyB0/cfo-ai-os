@@ -14,6 +14,8 @@ A month closes, a new forecast cycle is loaded, or the CFO, the board or a lende
 
 ## Steps
 
+If the cash-runway skill is installed, use it for steps 3 to 6, so the arithmetic is done by its script and is the same every time.
+
 1. Read closing cash at the reference month from actuals. It is an end-of-period figure: take the balance at that month, never a sum.
 2. Read the forecast cash movement for each month after the reference month from the current cycle. Name the cycle.
 3. Build the projection month by month: each month's closing cash is the previous month's closing cash plus that month's forecast movement.

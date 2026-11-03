@@ -134,9 +134,9 @@ def test_removed_region_is_reported_once(deployed, next_template):
     path = next_template / WORKFLOW
     text = read_text(path)
     body = regions(text)[0]
-    path.write_text(text.replace(f"<!-- cfo-os:template begin {body.id} -->\n", "")
-                        .replace(f"<!-- cfo-os:template end {body.id} -->\n", ""),
-                    encoding="utf-8", newline="")
+    markers = (f"cfo-os:template begin {body.id} ", f"cfo-os:template end {body.id} ")
+    kept = [l for l in text.splitlines(keepends=True) if not any(m in l for m in markers)]
+    path.write_text("".join(kept), encoding="utf-8", newline="")
     first = plan_upgrade(deployed, next_template, today="2027-02-01")
     assert f"{WORKFLOW}#{body.id}" in first.removed_regions
     apply_plan(deployed, first, "2027-02-01")

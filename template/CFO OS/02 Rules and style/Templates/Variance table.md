@@ -11,6 +11,8 @@ The standard table for comparing one figure with another: actual with budget, ac
 
 ## Rules
 
+If the variance-analysis skill is installed, build the table with it. Its script applies these rules and adds a price, volume and mix bridge where volumes exist.
+
 - The column headings name the scenario and cycle, for example "Forecast, current cycle" and "Budget".
 - Variance is the actual or current figure less the comparator. Under the table, say whether a positive variance is favourable, and which sign convention the figures use.
 - Revenue and cost lines are read the same way across the table. If cost is shown positive, say so.

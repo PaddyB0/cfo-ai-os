@@ -1,0 +1,14 @@
+{
+  "name": "cfo-ai-os",
+  "owner": {
+    "name": "Patrick Bowyer"
+  },
+  "description": "The CFO AI OS skills: finance work for a CFO using Claude, with the arithmetic in bundled scripts.",
+  "plugins": [
+    {
+      "name": "cfo-os",
+      "source": "./plugin",
+      "description": "Finance skills for a CFO: cash runway, variance analysis and forecast accuracy."
+    }
+  ]
+}
