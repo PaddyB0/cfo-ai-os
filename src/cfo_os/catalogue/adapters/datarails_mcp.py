@@ -2,7 +2,7 @@
 
 Input is what the connector's metric-list tool returns, saved as JSON: either the list of
 metrics itself or an object holding it under "metrics", "results" or "data". Each metric
-carries id, name, kind (BASE or CALC), category, time_aggregation, dimensions, formula,
+carries id, name, kind (BASE, CALC, USER or DRIVER), category, time_aggregation, dimensions, formula,
 description and status_info.
 """
 
@@ -10,13 +10,13 @@ from __future__ import annotations
 
 from typing import Any
 
-KINDS = {"BASE": "base", "CALC": "calculated"}
+KINDS = {"BASE": "base", "CALC": "calculated", "USER": "input", "DRIVER": "driver"}
 ROLLUPS = {"SUM": "sum", "EOP": "end_of_period", "AVG": "average", "AVERAGE": "average"}
 
 
 def looks_like(data: Any) -> bool:
     items = _items(data)
-    return bool(items) and isinstance(items[0], dict) and "time_aggregation" in items[0]
+    return any(isinstance(m, dict) and ("time_aggregation" in m or "status_info" in m) for m in items)
 
 
 def _items(data: Any) -> list[Any]:
@@ -30,19 +30,26 @@ def _items(data: Any) -> list[Any]:
 
 def convert(data: Any, source: str = "Datarails FinanceOS connector") -> dict[str, Any]:
     metrics = []
-    for m in _items(data):
+    for i, m in enumerate(_items(data)):
+        if not isinstance(m, dict):
+            raise ValueError(f"metric list item {i} is not an object")
         status = m.get("status_info") or {}
         agg = str(m.get("time_aggregation") or "").upper()
+        warning = status.get("source_warning") or None
+        state = str(status.get("status") or "").upper()
+        if state and state != "ACTIVE":
+            warning = f"status {state}" + (f"; {warning}" if warning else "")
         metrics.append({
-            "id": m["id"],
-            "name": m["name"],
-            "kind": KINDS.get(str(m.get("kind") or "").upper(), str(m.get("kind") or "").lower()),
-            "rollup": ROLLUPS.get(agg, agg.lower() or "sum"),
+            "id": m.get("id"),
+            "name": m.get("name"),
+            "kind": KINDS.get(str(m.get("kind") or "").upper(), "other"),
+            # A roll-up the connector does not give is unknown, never assumed to be a sum.
+            "rollup": ROLLUPS.get(agg, "unknown"),
             "category": m.get("category"),
             "dimensions": list(m.get("dimensions") or []),
             "formula": m.get("formula") or None,
             "description": m.get("description") or None,
-            "warning": status.get("source_warning") or None,
+            "warning": warning,
             "error": status.get("error_message") or None,
         })
     core: list[str] = []

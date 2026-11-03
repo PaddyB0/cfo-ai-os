@@ -47,7 +47,10 @@
           "kind": {
             "enum": [
               "base",
-              "calculated"
+              "calculated",
+              "input",
+              "driver",
+              "other"
             ]
           },
           "rollup": {
@@ -55,7 +58,8 @@
               "sum",
               "end_of_period",
               "average",
-              "none"
+              "none",
+              "unknown"
             ],
             "description": "How months roll up to quarters and years."
           },

@@ -66,9 +66,9 @@ def scan_text(rel: str, text: str) -> list[str]:
             hit("ulid", m.group(0))
         for m in UUID_RE.finditer(line):
             hit("uuid", m.group(0))
-        if not PINNED_ACTION_RE.search(line):
-            for m in HEX_RE.finditer(line):
-                hit("long hex id", m.group(0))
+        # Only the pinned action's own SHA is exempt, not the rest of its line.
+        for m in HEX_RE.finditer(PINNED_ACTION_RE.sub(" ", line)):
+            hit("long hex id", m.group(0))
         if not fictional:
             bare = DATE_RE.sub(" ", line)
             for m in NUMBER_RE.finditer(bare):

@@ -109,3 +109,42 @@ def test_cli_deploy_and_check_round_trip(tmp_path, capsys):
     assert main(["pasted", "--folder", str(target)]) == 0
     assert main(["check", "--folder", str(target)]) == 0
     assert "no findings" in capsys.readouterr().out
+
+
+def test_deploy_refuses_misspelt_answer_keys(tmp_path, template, answers, metrics):
+    broken = copy.deepcopy(answers)
+    broken["company"]["reportng_currency"] = "GBP"
+    broken["peeple"] = []
+    with pytest.raises(TemplateError) as e:
+        deploy(template, broken, metrics, tmp_path / "CFO OS", "d", "2027-01-15")
+    assert "company.reportng_currency" in str(e.value) and "peeple" in str(e.value)
+
+
+def test_bad_metric_list_fails_before_anything_is_written(tmp_path, template, answers, metrics):
+    from cfo_os.catalogue.build import validate
+    bad = copy.deepcopy(metrics)
+    bad["metrics"][0]["name"] = ["not", "text"]
+    with pytest.raises(TemplateError, match="name must be text"):
+        validate(bad, "x")
+    target = tmp_path / "CFO OS"
+    with pytest.raises(Exception):
+        deploy(template, answers, bad, target, "d", "2027-01-15")
+    assert not target.exists() or not any(target.iterdir())
+
+
+def test_datarails_kinds_missing_rollup_and_processing_status(tmp_path):
+    from cfo_os.catalogue import build as catalogue
+    raw = {"metrics": [
+        {"id": 101, "name": "Plan Input", "kind": "USER", "time_aggregation": "SUM", "dimensions": ["Entity"]},
+        {"id": 102, "name": "Driver", "kind": "DRIVER", "time_aggregation": "SUM", "dimensions": ["Entity"]},
+        {"id": 103, "name": "Balance", "kind": "BASE", "dimensions": ["Entity"],
+         "status_info": {"status": "PROCESSING"}},
+    ]}
+    path = tmp_path / "m.json"
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    data = catalogue.load_metrics(path, "datarails")
+    assert [m["kind"] for m in data["metrics"]] == ["input", "driver", "base"]
+    assert data["metrics"][2]["rollup"] == "unknown"
+    flagged = "\n".join(catalogue.watch_list(data["metrics"]))
+    assert "103 Balance: the connector gives no roll-up" in flagged
+    assert "status PROCESSING" in flagged

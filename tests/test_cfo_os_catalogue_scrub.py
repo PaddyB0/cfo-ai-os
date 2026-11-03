@@ -59,3 +59,8 @@ def test_scrub_allows_numbers_in_fictional_fixtures():
 
 def test_the_repository_itself_scrubs_clean():
     assert scan(ROOT) == []
+
+
+def test_scrub_still_catches_other_hex_on_a_pinned_action_line():
+    line = "      - uses: actions/checkout@" + "a" * 40 + "  # " + "b" * 40
+    assert any("long hex id" in f for f in scan_text("README.md", "Plain text.\n" + line))

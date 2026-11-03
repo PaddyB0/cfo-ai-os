@@ -19,9 +19,11 @@ from typing import Any
 from ..common import TemplateError
 from .adapters import datarails_mcp
 
-ROLLUPS = ("sum", "end_of_period", "average", "none")
-KINDS = ("base", "calculated")
-ROLLUP_WORDS = {"sum": "sum", "end_of_period": "end of period", "average": "average", "none": "none"}
+ROLLUPS = ("sum", "end_of_period", "average", "none", "unknown")
+KINDS = ("base", "calculated", "input", "driver", "other")
+ROLLUP_WORDS = {"sum": "sum", "end_of_period": "end of period", "average": "average", "none": "none",
+                "unknown": "unknown"}
+TEXT_FIELDS = ("category", "formula", "description", "warning", "error")
 
 
 def load_metrics(path: Path, source_format: str = "auto") -> dict[str, Any]:
@@ -50,8 +52,15 @@ def validate(data: Any, where: str) -> None:
             raise TemplateError(f"{loc}: kind {m['kind']!r} is not one of {', '.join(KINDS)}")
         if m["rollup"] not in ROLLUPS:
             raise TemplateError(f"{loc}: rollup {m['rollup']!r} is not one of {', '.join(ROLLUPS)}")
-        if not isinstance(m["dimensions"], list):
-            raise TemplateError(f"{loc}: dimensions must be a list")
+        if not isinstance(m["name"], str) or not m["name"].strip():
+            raise TemplateError(f"{loc}: name must be text")
+        if isinstance(m["id"], bool) or not isinstance(m["id"], (int, str)):
+            raise TemplateError(f"{loc}: id must be a number or text")
+        if not isinstance(m["dimensions"], list) or not all(isinstance(d, str) for d in m["dimensions"]):
+            raise TemplateError(f"{loc}: dimensions must be a list of names")
+        for key in TEXT_FIELDS:
+            if m.get(key) is not None and not isinstance(m[key], str):
+                raise TemplateError(f"{loc}: {key} must be text or null")
         if str(m["id"]) in seen:
             raise TemplateError(f"{loc}: id {m['id']} appears twice")
         seen.add(str(m["id"]))
@@ -77,6 +86,8 @@ def watch_list(metrics: list[dict[str, Any]]) -> list[str]:
                    "same question.")
     for m in ordered:
         tag = f"{m['id']} {m['name']}"
+        if m["rollup"] == "unknown":
+            out.append(f"- {tag}: the connector gives no roll-up. Ask before adding its months together.")
         if "retired" in m["name"].lower():
             out.append(f"- {tag}: retired in name, still listed. Ignore it.")
         if m["kind"] == "calculated" and m.get("formula") and m["rollup"] == "sum":

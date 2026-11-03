@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cfo-ai-os"
-version = "0.1.0"
+version = "0.1.1"
 description = "A folder template for a CFO working with Claude and a finance data connector."
 readme = "README.md"
 license = "Apache-2.0"
