@@ -1,0 +1,27 @@
+{
+  "_note": "Fictional example. No real company or figure. Amounts in thousands, natural sign.",
+  "current_label": "Actual Q2",
+  "comparator_label": "Budget Q2",
+  "currency": "EUR",
+  "unit": "thousands",
+  "sign_convention": "natural",
+  "materiality": {"absolute": 25, "percent": 10, "rule": "either"},
+  "lines": [
+    {"line": "Revenue", "type": "revenue", "current": 965, "comparator": 900, "source": "Board revenue, actuals and budget, Q2"},
+    {"line": "Cost of sales", "type": "cost", "current": -410, "comparator": -380, "source": "Cost of sales, actuals and budget, Q2"},
+    {"line": "Payroll", "type": "cost", "current": -300, "comparator": -310, "source": "Payroll, actuals and budget, Q2", "comment": "Two hires started a month late."},
+    {"line": "Marketing", "type": "cost", "current": -95, "comparator": -60, "source": "Marketing, actuals and budget, Q2"},
+    {"line": "Headcount", "type": "balance", "current": 41, "comparator": 43, "favourable_when": "lower", "source": "Headcount at quarter end"}
+  ],
+  "totals": [
+    {"line": "Gross profit", "of": ["Revenue", "Cost of sales"], "current": 555, "comparator": 520},
+    {"line": "Operating profit", "of": ["Revenue", "Cost of sales", "Payroll", "Marketing"], "current": 160, "comparator": 150}
+  ],
+  "pvm": {
+    "line": "Revenue",
+    "items": [
+      {"name": "Standard plan", "current_volume": 50, "current_price": 11, "comparator_volume": 60, "comparator_price": 10},
+      {"name": "Premium plan", "current_volume": 15, "current_price": 25, "comparator_volume": 12, "comparator_price": 25}
+    ]
+  }
+}

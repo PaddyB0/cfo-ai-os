@@ -9,3 +9,4 @@ answers*.yaml
 !examples/answers.example.yaml
 CFO OS/
 !template/CFO OS/
+plugin/evals/results/

@@ -8,6 +8,7 @@ A folder template for a CFO who works with Claude and a finance data connector, 
 
 - `template/CFO OS/`: the folder a CFO receives, with placeholders and template regions.
 - `src/cfo_os/`: the tool. `placeholders.yaml` lists every placeholder; `ownership.yaml` gives every template path its class.
+- `plugin/`: the `cfo-os` Claude plugin, one folder per skill under `plugin/skills/`, with its eval suite in `plugin/evals/`. `.claude-plugin/marketplace.json` makes the repository its marketplace. Read `docs/skills.md` before adding a skill.
 - `schemas/`, `examples/`, `tests/`, `docs/`.
 
 ## Rules
@@ -29,5 +30,7 @@ python run.py deploy --answers examples/answers.example.yaml --metrics examples/
 python run.py pasted --folder "<scratch>/CFO OS"
 python run.py check --folder "<scratch>/CFO OS"
 ```
+
+When the plugin's manifests change, also run `claude plugin validate --strict .` and `claude plugin validate --strict plugin`. The plugin's version is the package version.
 
 All must pass. When a change alters template text, add a line to `CHANGELOG.md` naming the regions it changed.

@@ -2,6 +2,21 @@
 
 All notable changes to this project are recorded here, newest first. The format follows Keep a Changelog, and versions follow Semantic Versioning. Each entry says which template regions changed, so a deployer knows what an upgrade will touch.
 
+## 0.2.0 - 2026-11-03
+
+### Added
+
+- A Claude plugin, `cfo-os`, in `plugin/`, with this repository as its marketplace. Three skills, each doing its arithmetic in a bundled standard-library script:
+  - `cash-runway`: closing cash projected from an actual opening balance and one forecast cycle, the month cash falls below a floor, a tie to the forecast's own closing cash, a trailing-burn check and sensitivities.
+  - `variance-analysis`: a variance table with favourable or adverse decided from line type and sign convention, materiality, totals tied to their lines, and a price, volume and mix bridge that adds up exactly.
+  - `forecast-accuracy`: net error, WAPE and bias of the previous cycle on closed months, steps from run rate in the new cycle, and the full year spliced at the reference month.
+- `cfo-os skills --out <folder>`: packages each skill as a reproducible zip for upload in the Claude apps.
+- An eval suite in `plugin/evals/` and `docs/skills.md`: what ships, how to install it, and when a workflow becomes a skill.
+
+### Template regions
+
+- `04 Workflows/Monthly/Cash runway.md`, `04 Workflows/Monthly/Forecast critique.md` and `02 Rules and style/Templates/Variance table.md`: `body`. Each gains one line pointing to the matching skill when it is installed. The steps are unchanged.
+
 ## 0.1.1 - 2026-11-02
 
 ### Added

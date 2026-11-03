@@ -1,0 +1,39 @@
+{
+  "_note": "Fictional example. No real company or figure. Amounts in thousands, natural sign.",
+  "reference_month": "2027-06",
+  "full_year_months": ["2027-01", "2027-02", "2027-03", "2027-04", "2027-05", "2027-06",
+                       "2027-07", "2027-08", "2027-09", "2027-10", "2027-11", "2027-12"],
+  "sign_convention": "natural",
+  "step_change_percent": 15,
+  "run_rate_months": 3,
+  "actual_label": "Actuals",
+  "prior_label": "Forecast 3+9",
+  "current_label": "Forecast 6+6",
+  "budget_label": "Budget",
+  "currency": "USD",
+  "unit": "thousands",
+  "lines": [
+    {
+      "line": "Revenue", "type": "revenue",
+      "actuals": {"2027-01": 300, "2027-02": 310, "2027-03": 320, "2027-04": 318, "2027-05": 325, "2027-06": 330},
+      "prior_forecast": {"2027-04": 340, "2027-05": 345, "2027-06": 350},
+      "current_forecast": {"2027-07": 390, "2027-08": 395, "2027-09": 400, "2027-10": 405, "2027-11": 410, "2027-12": 420},
+      "budget_full_year": 4300,
+      "prior_full_year": 4250
+    },
+    {
+      "line": "Operating costs", "type": "cost",
+      "actuals": {"2027-01": -250, "2027-02": -255, "2027-03": -262, "2027-04": -270, "2027-05": -268, "2027-06": -275},
+      "prior_forecast": {"2027-04": -265, "2027-05": -262, "2027-06": -270},
+      "current_forecast": {"2027-07": -278, "2027-08": -280, "2027-09": -282, "2027-10": -284, "2027-11": -286, "2027-12": -290},
+      "budget_full_year": -3200,
+      "prior_full_year": -3250
+    },
+    {
+      "line": "Closing cash", "type": "balance",
+      "actuals": {"2027-01": 950, "2027-02": 960, "2027-03": 970, "2027-04": 965, "2027-05": 980, "2027-06": 990},
+      "prior_forecast": {"2027-04": 980, "2027-05": 995, "2027-06": 1010},
+      "current_forecast": {"2027-07": 1000, "2027-08": 1020, "2027-09": 1040, "2027-10": 1060, "2027-11": 1080, "2027-12": 1100}
+    }
+  ]
+}

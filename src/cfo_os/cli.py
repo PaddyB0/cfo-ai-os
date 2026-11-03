@@ -6,6 +6,7 @@
     cfo-os pasted     record that Instructions.md was pasted into the Claude Project
     cfo-os catalogue  render a metric list as the metric catalogue
     cfo-os scrub      the public-safety scan of this repository
+    cfo-os skills     package the plugin's skills as zip files for upload in Claude
 """
 
 from __future__ import annotations
@@ -37,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
         from .catalogue.build import main as run
     elif command == "scrub":
         from .scrub_check import main as run
+    elif command == "skills":
+        from .skills import main as run
     else:
         print(f"unknown command {command!r}; run cfo-os --help", file=sys.stderr)
         return 2

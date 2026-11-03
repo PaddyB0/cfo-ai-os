@@ -15,6 +15,8 @@ A new forecast cycle is loaded, or a month closes and the CFO wants to know whet
 
 ## Steps
 
+If the forecast-accuracy skill is installed, use it for steps 2, 3 and 5, and the variance-analysis skill for the variance table, so the arithmetic is done by their scripts.
+
 1. Confirm the reference month and the current and previous cycles. Name them before showing any figure.
 2. For the months just closed, compare actuals with what the previous cycle forecast for them. This shows how good the last forecast was.
 3. For the full year, compare the current cycle with the previous cycle and with the budget, in the variance table format. The full year is actuals to the reference month plus the current cycle after it.
