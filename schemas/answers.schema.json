@@ -106,13 +106,24 @@
       ]
     },
     "people": {
-      "description": "One row per person Claude may need to know about, with role and what they receive.",
+      "description": "One row per person Claude may need to know about, with role, tier and what they receive.",
       "type": [
         "array",
         "string"
       ],
       "items": {
         "type": "object",
+        "properties": {
+          "tier": {
+            "description": "The tier folder the person works in: CFO, VP or Team, or none for someone who only receives outputs.",
+            "enum": [
+              "CFO",
+              "VP",
+              "Team",
+              "none"
+            ]
+          }
+        },
         "additionalProperties": {
           "type": [
             "string",

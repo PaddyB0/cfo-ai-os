@@ -11,7 +11,7 @@ import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 import yaml
 
@@ -19,10 +19,12 @@ from . import __version__
 
 PACKAGE = Path(__file__).resolve().parent
 FOLDER_NAME = "CFO OS"
-MANIFEST = "00 System/Template manifest.json"
-CHANGELOG = "00 System/Changelog.md"
-INSTRUCTIONS = "00 System/Instructions.md"
-CATALOGUE = "01 Context/Metric catalogue.md"
+MANIFEST = "Shared/Claude/Template manifest.json"
+CHANGELOG = "Shared/Claude/Changelog.md"
+INSTRUCTIONS = "Shared/Claude/Instructions.md"
+CATALOGUE = "Shared/Claude/Metric catalogue.md"
+OLD_MANIFEST = "00 System/Template manifest.json"  # the 0.2 layout, refused since 0.3
+TIERS = ("CFO", "VP", "Team")
 CLASSES = ("system", "context", "generated", "client")
 IGNORED_NAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
 
@@ -39,21 +41,25 @@ class TemplateError(Exception):
 # --- locating the template ---------------------------------------------------------------
 
 def find_template(explicit: str | os.PathLike[str] | None = None) -> Path:
-    """The `template/CFO OS` folder: --template, then CFO_OS_TEMPLATE, then the clone this
-    package runs from, then the current directory."""
+    """The `template/CFO OS` folder: --template, then CFO_OS_TEMPLATE, then the copy installed
+    with this package, then the clone this package runs from, then the current directory."""
     candidates: list[Path] = []
     if explicit:
         candidates.append(Path(explicit))
     if os.environ.get("CFO_OS_TEMPLATE"):
         candidates.append(Path(os.environ["CFO_OS_TEMPLATE"]))
+    # An installed package carries its own template (pyproject.toml maps it to cfo_os._template).
+    # It comes before the current directory, so the tool never fills another version's template.
+    candidates.append(PACKAGE / "_template" / FOLDER_NAME)
     candidates += [parent / "template" / FOLDER_NAME for parent in PACKAGE.parents]
     candidates.append(Path.cwd() / "template" / FOLDER_NAME)
     for c in candidates:
         if c.name != FOLDER_NAME and (c / "template" / FOLDER_NAME).is_dir():
             c = c / "template" / FOLDER_NAME
-        if (c / "00 System").is_dir():
+        if (c / "Shared" / "Claude").is_dir() and (c / TIERS[0]).is_dir():
             return c.resolve()
-    raise TemplateError("template folder not found; run from the clone or pass --template")
+    raise TemplateError("template folder not found; reinstall cfo-ai-os, run from the clone or "
+                        "pass --template")
 
 
 def template_files(template: Path) -> list[str]:
@@ -63,6 +69,37 @@ def template_files(template: Path) -> list[str]:
         if p.is_file() and p.name not in IGNORED_NAMES:
             out.append(p.relative_to(template).as_posix())
     return out
+
+
+# --- tiers --------------------------------------------------------------------------------
+
+def parse_tiers(value: str | Iterable[str]) -> tuple[str, ...]:
+    """A tier list, given as "CFO,VP" or as a sequence, checked and in canonical order.
+    Each name is one of TIERS (any case), and CFO is always included."""
+    items = value.split(",") if isinstance(value, str) else list(value)
+    canonical = {t.lower(): t for t in TIERS}
+    chosen: set[str] = set()
+    for item in items:
+        name = str(item).strip()
+        if name.lower() not in canonical:
+            raise TemplateError(f"tiers: {name!r} is not a tier; choose from {', '.join(TIERS)}, "
+                                "comma separated, for example CFO,VP")
+        chosen.add(canonical[name.lower()])
+    if TIERS[0] not in chosen:
+        raise TemplateError(f"tiers: {TIERS[0]} is always included; for example --tiers "
+                            f"{','.join(TIERS[:1] + tuple(t for t in TIERS if t in chosen))}")
+    return tuple(t for t in TIERS if t in chosen)
+
+
+def tier_of(rel: str) -> str | None:
+    """The tier a folder-relative path belongs to, or None for a path outside the tier folders."""
+    first = rel.split("/")[0]
+    return first if first in TIERS else None
+
+
+def in_tiers(rel: str, tiers: Iterable[str]) -> bool:
+    tier = tier_of(rel)
+    return tier is None or tier in tiers
 
 
 # --- ownership -----------------------------------------------------------------------------
@@ -98,6 +135,8 @@ def load_placeholders(path: Path | None = None) -> dict[str, dict[str, Any]]:
             raise TemplateError(f"placeholders.yaml: {name} has no valid form")
         if spec.get("required") and "default" in spec:
             raise TemplateError(f"placeholders.yaml: {name} is required and has a default")
+        if "choices" in spec and spec["form"] != "table":
+            raise TemplateError(f"placeholders.yaml: {name} has choices but is not a table")
     return data
 
 
@@ -118,8 +157,10 @@ def _cell(value: Any) -> str:
     return str(value).replace("\n", " ").replace("|", "\\|").strip()
 
 
-def render_value(name: str, form: str, value: Any) -> str:
-    """One answer as Markdown text."""
+def render_value(name: str, form: str, value: Any,
+                 choices: dict[str, list[str]] | None = None) -> str:
+    """One answer as Markdown text. `choices` names the values a table column may hold; a row
+    with any other value is refused, so a misspelt tier never reaches the folder."""
     if form == "text":
         if isinstance(value, (list, dict)):
             raise TemplateError(f"answer {name}: expected a single line of text")
@@ -134,6 +175,11 @@ def render_value(name: str, form: str, value: Any) -> str:
         return value.rstrip()
     if not isinstance(value, list) or not all(isinstance(r, dict) for r in value):
         raise TemplateError(f"answer {name}: expected a list of rows")
+    for n, row in enumerate(value, 1):
+        for column, allowed in (choices or {}).items():
+            if column in row and str(row[column]).strip() not in allowed:
+                raise TemplateError(f"answer {name}: row {n} has {column} {str(row[column])!r}; "
+                                    f"it must be one of {', '.join(allowed)}")
     columns: list[str] = []
     for row in value:
         for key in row:
@@ -179,7 +225,7 @@ def resolve_values(answers: dict[str, Any], specs: dict[str, dict[str, Any]],
                 missing.append(name)
                 continue
             raw = spec.get("default", "")
-        values[name] = render_value(name, spec["form"], raw)
+        values[name] = render_value(name, spec["form"], raw, spec.get("choices"))
     return values, missing
 
 
@@ -282,6 +328,10 @@ def write_text(path: Path, text: str, attempts: int = 5) -> None:
 
 def load_manifest(folder: Path) -> dict[str, Any]:
     path = folder / MANIFEST
+    if not path.is_file() and (folder / OLD_MANIFEST).is_file():
+        raise TemplateError(f"{folder}: this folder is on the 0.2 layout ({OLD_MANIFEST}). The layout "
+                            "changed in 0.3 and cannot be upgraded in place; see docs/upgrade.md, "
+                            "section \"Moving from 0.2\"")
     if not path.is_file():
         raise TemplateError(f"{folder}: no {MANIFEST}; this folder was not deployed from the template")
     return json.loads(read_text(path))

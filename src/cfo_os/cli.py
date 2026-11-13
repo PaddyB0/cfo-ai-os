@@ -3,8 +3,8 @@
     cfo-os deploy     a new folder from the template, an answers file and a metric list
     cfo-os upgrade    move a deployed folder to this template version (dry run by default)
     cfo-os check      check a folder against its filing rules
-    cfo-os pasted     record that Instructions.md was pasted into the Claude Project
     cfo-os catalogue  render a metric list as the metric catalogue
+    cfo-os prompt     build the setup prompt, SETUP.md (from a clone of the repository)
     cfo-os scrub      the public-safety scan of this repository
     cfo-os skills     package the plugin's skills as zip files for upload in Claude
 """
@@ -31,9 +31,8 @@ def main(argv: list[str] | None = None) -> int:
         from .upgrade import main as run
     elif command == "check":
         from .check_folder import main as run
-    elif command == "pasted":
-        from .check_folder import main as check_main
-        return check_main(rest, pasted=True)
+    elif command == "prompt":
+        from .setup_prompt import main as run
     elif command == "catalogue":
         from .catalogue.build import main as run
     elif command == "scrub":

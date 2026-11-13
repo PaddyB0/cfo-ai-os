@@ -49,22 +49,52 @@ def test_regions_parse_and_system_files_have_them(template):
         cls = ownership.classify(rel)
         if cls != "system":
             assert not found, f"{rel}: only system files carry template regions"
-        elif rel != "00 System/Changelog.md":
+        elif rel != "Shared/Claude/Changelog.md":
             assert found, f"{rel}: a system file needs at least one template region"
 
 
+def _workflows(template):
+    folder = template / "Shared" / "Workflows"
+    return sorted(p for p in folder.iterdir() if p.is_file() and p.name != "Workflow template.md")
+
+
 def test_workflows_follow_the_workflow_template(template):
-    for rel in template_files(template):
-        if not rel.startswith("04 Workflows/") or rel.endswith("Workflow template.md"):
-            continue
-        text = read_text(template / rel)
+    workflows = _workflows(template)
+    assert len(workflows) == 10
+    for path in workflows:
+        text = read_text(path)
         positions = [text.find(h) for h in WORKFLOW_HEADINGS]
-        assert all(p >= 0 for p in positions), f"{rel}: missing a workflow heading"
-        assert positions == sorted(positions), f"{rel}: workflow headings out of order"
+        assert all(p >= 0 for p in positions), f"{path.name}: missing a workflow heading"
+        assert positions == sorted(positions), f"{path.name}: workflow headings out of order"
+
+
+def test_each_workflow_trigger_begins_with_its_cadence(template):
+    for path in _workflows(template):
+        lines = read_text(path).splitlines()
+        after = lines[lines.index("## Trigger") + 1:]
+        first = next(line for line in after if line.strip() and not line.startswith("<!--"))
+        assert re.match(r"(Monthly|Quarterly|Annual|On request)\.", first), f"{path.name}: {first}"
+
+
+REMOVED_NAMES = re.compile(r"\b0\d |START HERE|Folder map|Every session|Start session|Close session|"
+                           r"Key findings\.md|Decisions\.md|Open questions\.md|Lessons\.md")
+
+
+def test_no_template_file_names_a_removed_file_or_folder(template):
+    for rel in template_files(template):
+        for n, line in enumerate(read_text(template / rel).splitlines(), 1):
+            assert not REMOVED_NAMES.search(line), f"{rel}:{n}: {line}"
+
+
+def test_tier_folders_hold_the_same_files(template):
+    def files(tier):
+        return sorted(p.relative_to(template / tier).as_posix()
+                      for p in (template / tier).rglob("*") if p.is_file())
+    assert files("CFO") == files("VP") == files("Team") == ["Memory/Log.md", "Memory/Now.md", "Role.md"]
 
 
 def test_instructions_keep_client_sections_outside_template_regions(template):
-    text = read_text(template / "00 System/Instructions.md")
+    text = read_text(template / "Shared/Claude/Instructions.md")
     inside = "\n".join(r.text for r in regions(text))
     for heading in ("## Key facts", "## How we work", "## Hypotheses", "## Standard analyses"):
         assert heading in text and heading not in inside, heading

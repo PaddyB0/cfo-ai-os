@@ -34,3 +34,11 @@ def deployed(tmp_path, template, answers, metrics) -> Path:
     target = tmp_path / "Société Finance" / "CFO OS"
     deploy(template, answers, metrics, target, "Example Deployer", "2027-01-15")
     return target
+
+
+@pytest.fixture
+def deployed_all(tmp_path, template, answers, metrics) -> Path:
+    """The same, with all three tier folders."""
+    target = tmp_path / "Société Finance" / "CFO OS"
+    deploy(template, answers, metrics, target, "Example Deployer", "2027-01-15", "CFO,VP,Team")
+    return target

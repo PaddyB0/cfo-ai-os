@@ -10,7 +10,8 @@ It reports, as `path:line: rule: text`:
   workflow files excepted);
 - numbers of four or more digits, other than years, dates and versions, in files whose first
   lines do not say they are fictional;
-- placeholders outside template/, examples/, docs/, tests/ and the placeholder list.
+- placeholders outside template/, examples/, docs/, tests/, the placeholder list, the setup
+  prompt's source and SETUP.md, which carries the template.
 
 Exit codes: 0 clean, 1 findings, 2 usage error.
 """
@@ -29,7 +30,8 @@ ALLOWED_HOSTS = {
     "mcp.datarails.com", "json-schema.org",
 }
 SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".venv", "venv", "build", "dist", ".tox"}
-PLACEHOLDER_ROOTS = ("template/", "examples/", "docs/", "tests/", "src/cfo_os/placeholders.yaml")
+PLACEHOLDER_ROOTS = ("template/", "examples/", "docs/", "tests/", "src/cfo_os/placeholders.yaml",
+                     "src/cfo_os/setup_prompt.md", "SETUP.md")
 
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
 URL_RE = re.compile(r"https?://([^/\s)>\]\"'`]+)")
