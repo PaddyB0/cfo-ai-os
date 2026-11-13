@@ -1,11 +1,12 @@
 [build-system]
-requires = ["setuptools>=69"]
+# 77 is the first setuptools that reads the SPDX `license` text and `license-files` below.
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "cfo-ai-os"
-version = "0.2.0"
-description = "A folder template for a CFO working with Claude and a finance data connector."
+version = "0.3.0"
+description = "A folder template for a finance team working with Claude and a finance data connector."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -19,11 +20,19 @@ test = ["pytest>=8", "jsonschema>=4.18"]
 [project.scripts]
 cfo-os = "cfo_os.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+# The template travels inside the package as cfo_os._template, so an installed `cfo-os` can
+# deploy with no clone on disk. A new package under src/cfo_os is added to this list by hand;
+# tests/test_cfo_os_packaging.py fails when one is missing.
+[tool.setuptools]
+packages = ["cfo_os", "cfo_os.catalogue", "cfo_os.catalogue.adapters", "cfo_os._template"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+"cfo_os._template" = "template"
 
 [tool.setuptools.package-data]
-cfo_os = ["*.yaml"]
+cfo_os = ["*.yaml", "*.md"]
+"cfo_os._template" = ["**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

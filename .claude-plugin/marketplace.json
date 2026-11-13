@@ -8,6 +8,7 @@
     {
       "name": "cfo-os",
       "source": "./plugin",
+      "version": "0.3.0",
       "description": "Finance skills for a CFO: cash runway, variance analysis and forecast accuracy."
     }
   ]

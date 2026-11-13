@@ -32,18 +32,23 @@ cfo:
 people:
   - name: Helen Marsh
     role: CFO
+    tier: CFO
     receives: Everything
   - name: Daniel Okoro
     role: Chief Executive
+    tier: none
     receives: Management accounts, board pack, cash runway
   - name: Priya Lal
     role: Financial Controller
+    tier: VP
     receives: Month-end close checklist, quarterly accounts
   - name: Tom Ashby
     role: FP&A Analyst
+    tier: Team
     receives: Forecast critique, budget workings
   - name: The audit partner
     role: External auditor
+    tier: none
     receives: Quarterly accounts, year-end request list
 
 connector:

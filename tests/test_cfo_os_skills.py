@@ -357,7 +357,7 @@ def test_skill_is_well_formed(skill):
 @pytest.mark.parametrize("skill", sorted(SCRIPTS))
 def test_skill_names_only_paths_the_template_ships(skill):
     text = (SKILLS / skill / "SKILL.md").read_text(encoding="utf-8")
-    for rel in re.findall(r"`(0\d [^`]+?\.md)`", text):
+    for rel in re.findall(r"`(Shared/[^`]+?\.md)`", text):
         assert (TEMPLATE / rel).is_file(), f"{skill}: {rel}"
     for other in re.findall(r"\(use ([a-z-]+)\)", text):
         assert other in SCRIPTS, f"{skill}: names unknown skill {other}"
@@ -387,7 +387,9 @@ def test_plugin_and_marketplace_versions_follow_the_package():
     version = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"), re.M).group(1)
     plugin = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
     market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
-    assert plugin["version"] == version
+    from cfo_os import __version__
+    assert plugin["version"] == version == __version__
+    assert market["plugins"][0].get("version", version) == version
     assert [p["name"] for p in market["plugins"]] == [plugin["name"]]
     assert market["plugins"][0]["source"] == "./plugin"
 

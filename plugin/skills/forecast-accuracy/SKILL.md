@@ -16,7 +16,7 @@ The numbers are worked out by `scripts/accuracy.py`. It refuses inputs that woul
 - **Sign convention**: `natural` (revenue positive, costs negative) or `costs_positive`.
 - **Step threshold**: how large a change from run rate needs explaining. The default is 15%.
 
-In a CFO OS folder, the reference month, cycles and cycle rule are in `01 Context/Data.md`, the sign convention in `02 Rules and style/Rules.md`, and the steps and filing in `04 Workflows/Monthly/Forecast critique.md`. Follow the workflow; this skill does its steps 2, 3 and 5. Elsewhere, ask, and say what you assumed.
+In a CFO OS folder, the reference month, cycles and cycle rule are in `Shared/Claude/Data.md`, the sign convention in `Shared/Claude/Rules.md`, and the steps and filing in `Shared/Workflows/Forecast critique.md`. Follow the workflow; this skill does its steps 2, 3 and 5. Elsewhere, ask, and say what you assumed.
 
 ## 2. Read the figures
 
@@ -61,7 +61,7 @@ Shape:
 
 ## 4. Read the results, then write up
 
-- **WAPE** says how far off the forecast was month by month. **Bias** says whether it leaned one way. A low bias with a high WAPE means timing errors that cancel out. A bias that is "optimistic" for several cycles running is a finding for `Key findings` and a question for the forecast owner.
+- **WAPE** says how far off the forecast was month by month. **Bias** says whether it leaned one way. A low bias with a high WAPE means timing errors that cancel out. A bias that is "optimistic" for several cycles running is a line for `Memory/Now.md` and a question for the forecast owner.
 - **Steps from run rate** are where the current cycle departs from what the business has just been doing. Each one needs a named reason (a price rise, a new contract, a hire plan, seasonality) and an owner. A step without a reason is a weak assumption: list it with the figure that makes it look weak.
 - **Full year** shows its split (for example 6+6) and its basis. Variances are full year less budget, and less the previous cycle.
 

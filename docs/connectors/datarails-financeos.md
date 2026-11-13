@@ -32,7 +32,7 @@ The metric catalogue is generated from the connector's own metric list.
 cfo-os catalogue metrics.json --from datarails > "Metric catalogue.md"
 ```
 
-The adapter reads the connector's output into the template's neutral metric list, then the catalogue is built from that. Move the result into `01 Context/` and do not edit it by hand.
+The adapter reads the connector's output into the template's neutral metric list, then the catalogue is built from that. Move the result into `Shared/Claude/` and do not edit it by hand. The list holds every metric your own login can see, and every tier can read the catalogue; [roles.md](../roles.md), "What Shared shows everyone", says how to leave metrics out.
 
 ## Reading figures well
 

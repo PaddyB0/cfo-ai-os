@@ -15,7 +15,7 @@ The arithmetic is done by `scripts/runway.py`, never by hand, so the same inputs
 - **Floor**: zero, or the minimum cash level or covenant headroom the business has set.
 - **Previous runway**, if one was reported, with its cycle, so the change can be explained.
 
-In a CFO OS folder, the reference month and cycle rule are in `01 Context/Data.md`, the floor and sign convention in `02 Rules and style/Rules.md`, the steps and filing in `04 Workflows/Monthly/Cash runway.md`, and the previous runway in `03 Memory/Key findings.md`. Follow the workflow; this skill does its steps 3 to 6. Elsewhere, ask for anything not given, and say what you assumed.
+In a CFO OS folder, the reference month and cycle rule are in `Shared/Claude/Data.md`, the floor and sign convention in `Shared/Claude/Rules.md`, the steps and filing in `Shared/Workflows/Cash runway.md`, and the previous runway in `Memory/Now.md` in your tier folder. Follow the workflow; this skill does its steps 3 to 6. Elsewhere, ask for anything not given, and say what you assumed.
 
 ## 2. Read the figures
 

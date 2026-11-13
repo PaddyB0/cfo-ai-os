@@ -1,6 +1,6 @@
 {
   "name": "cfo-os",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Finance skills for a CFO working with Claude: cash runway, variance analysis with a price, volume and mix bridge, and forecast accuracy. Each skill does its arithmetic in a bundled script, so the same inputs always give the same answer.",
   "author": {"name": "Patrick Bowyer"},
   "repository": "https://github.com/PaddyB0/cfo-ai-os",

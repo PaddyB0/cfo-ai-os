@@ -14,7 +14,7 @@ The arithmetic and the favourable or adverse calls are done by `scripts/variance
 - **Sign convention**: `natural` (revenue positive, costs negative, the usual connector sign) or `costs_positive` (costs shown as positive numbers, the usual management-accounts layout). Use the one the figures are actually in.
 - **Materiality**: an absolute amount, a percentage, or both, and whether a line must pass `either` or `both`.
 
-In a CFO OS folder, the sign convention and materiality are in `02 Rules and style/Rules.md`, the table layout in `02 Rules and style/Templates/Variance table.md`, and the scenario and cycle rules in `01 Context/Data.md`. Elsewhere, ask, and say what you assumed.
+In a CFO OS folder, the sign convention and materiality are in `Shared/Claude/Rules.md`, the table layout in `Shared/Workflows/Templates/Variance table.md`, and the scenario and cycle rules in `Shared/Claude/Data.md`. Elsewhere, ask, and say what you assumed.
 
 ## 2. Read the figures
 
